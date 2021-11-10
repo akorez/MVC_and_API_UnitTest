@@ -231,5 +231,86 @@ namespace UdemyRealWorldUnitTest.Test
             _mockRepo.Verify(x => x.Update(It.IsAny<Product>()), Times.Once);
 
         }
+
+
+        [Fact]
+        public async void Delete_IdIsNull_ReturnRedirectToIndex()
+        {
+            var result = await _controller.Delete(null);
+
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+
+            Assert.Equal("Index", redirect.ActionName);
+            
+        }
+
+        [Theory]
+        [InlineData(0)]
+
+        public async void Delete_ProductIsNull_ReturnNotFound(int productId)
+        {
+            Product product = null;
+
+            _mockRepo.Setup(x => x.GetById(productId)).ReturnsAsync(product);
+
+            var result = await _controller.Delete(productId);
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Theory]
+        [InlineData(1)]
+
+        public async void Delete_ActionExecutes_ReturnView(int productId)
+        {
+            var product = products.First(x => x.Id == productId);
+
+            _mockRepo.Setup(x => x.GetById(productId)).ReturnsAsync(product);
+
+            var result = await _controller.Delete(productId);
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+
+            Assert.IsAssignableFrom<Product>(viewResult.Model);
+        }
+        [Theory]
+        [InlineData(1)]
+        public async void DeleteConfirmed_ActionExecutes_ReturnRedirectToIndex(int productId)
+        {          
+
+            var result = await _controller.DeleteConfirmed(productId);
+
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Theory]
+        [InlineData(1)]
+
+        public async void DeleteConfirmed_ActionExecutes_DeleteMethodExecute(int productId)
+        {
+            Product product = products.First(x => x.Id == productId);
+            _mockRepo.Setup(x => x.GetById(productId)).ReturnsAsync(product);
+
+            await _controller.DeleteConfirmed(productId);
+
+            _mockRepo.Verify(x => x.Delete(It.IsAny<Product>()), Times.Once);
+        }
+
+
+        [Theory]
+        [InlineData(1)]
+
+        public void ProductExists_ActionExecutes_ReturnTrue(int productId)
+        {
+            Product product = products.First(x => x.Id == productId);
+            _mockRepo.Setup(x => x.GetById(productId)).ReturnsAsync(product);
+
+            var result = _controller.ProductExists(productId);
+
+            Assert.True(result);
+        }
+
     }
 }

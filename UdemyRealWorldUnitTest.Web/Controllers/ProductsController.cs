@@ -118,7 +118,7 @@ namespace UdemyRealWorldUnitTest.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction("Index");
             }
 
             var product = await _repository.GetById((int)id);
@@ -141,7 +141,7 @@ namespace UdemyRealWorldUnitTest.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        public bool ProductExists(int id)
         {
             var product = _repository.GetById(id).Result;
 
