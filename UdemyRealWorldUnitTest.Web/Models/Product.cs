@@ -16,5 +16,7 @@ namespace UdemyRealWorldUnitTest.Web.Models
         public int? Stock { get; set; }
         [Required]
         public string Color { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }
